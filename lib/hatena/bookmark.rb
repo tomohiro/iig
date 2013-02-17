@@ -37,12 +37,8 @@ module Hatena
         page.search('div.interest-sub-unit').each do |interest|
           nick = interest.at('h2/a').text
           interests[nick] = []
-          interest.search('ul.sub-entry-list/li').each do |entry|
-            interests[nick] << {
-              title: entry.at('h3/a').attributes['title'].text,
-              url:   entry.at('h3/a').attributes['href'].text,
-              users: entry.at('span.users').text
-            }
+          interest.search('ul.sub-entry-list/li').each do |entry_dom|
+            interests[nick] << extract_entry_information(entry_dom)
           end
         end
       end
@@ -61,6 +57,14 @@ module Hatena
 
       def save_cookie(agent)
         agent.cookie_jar.save_as(cookie_file_path)
+      end
+
+      def extract_entry_information(entry_dom)
+        {
+          title: entry_dom.at('h3/a').attributes['title'].text,
+          url:   entry_dom.at('h3/a').attributes['href'].text,
+          users: entry_dom.at('span.users').text
+        }
       end
   end
 end
