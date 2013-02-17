@@ -1,10 +1,7 @@
-#!/usr/bin/env ruby
 # encoding: utf-8
 
-require 'time'
-require 'open-uri'
 require 'net/irc'
-require 'mechanize'
+require 'hatena/bookmark'
 
 module InterestIrcGateway
   class Session < Net::IRC::Server::Session
@@ -18,6 +15,7 @@ module InterestIrcGateway
 
     def initialize(*args)
       super
+      @hatebu = Hatena::Bookmark.new
       @bookmarks = []
       @users = []
     end
@@ -26,14 +24,22 @@ module InterestIrcGateway
       '#interest'
     end
 
-    def interest_uri
-      'http://b.hatena.ne.jp/%s/interest'
-    end
-
     def on_user(message)
       super
+      @hatebu.login(@real, @pass)
+
       post(@nick, JOIN, main_channel)
-      start_monitoring(main_channel, interest_uri)
+
+      Thread.start do
+        loop do
+          @log.info('monitoring bookmarks...')
+          monitoring(main_channel)
+          @log.info('sleep 300 seconds')
+          sleep 300
+        end
+      end
+    rescue => e
+      @log.error(e.to_s)
     end
 
     def on_disconnected
@@ -43,76 +49,25 @@ module InterestIrcGateway
     end
 
     private
-      def start_monitoring(channel, uri)
-        @agent = login_hatena
+      def monitoring(channel)
+        @hatebu.interests(@real).each do |interest, entries|
+          unless @users.include?(interest)
+            post(interest, JOIN, channel)
+            @users << interest
+          end
 
-        Thread.start do
-          loop do
-            begin
-              @log.info("#{channel} monitoring bookmarks...")
+          entries.each do |entry|
+            url = entry[:url]
+            next if @bookmarks.include?(url)
 
-              extract_bookmarks(uri % @real) do |nick, title, url, users|
-                unless @users.include?(nick)
-                  post(nick, JOIN, channel)
-                  @users << nick
-                end
-
-                next if @bookmarks.include?(url)
-                privmsg(nick, channel, "#{title} #{url} (#{users})")
-                @bookmarks << url
-              end
-
-              @log.info("#{channel} sleep 300 seconds")
-              sleep 300
-            rescue Exception => e
-              @log.error(e.inspect)
-              e.backtrace.each { |l| @log.error "\t#{l}" }
-              sleep 300
-            end
+            privmsg(interest, channel, "#{entry[:title]} #{url} (#{entry[:users]})")
+            @bookmarks << url
           end
         end
-      end
-
-      def login_hatena
-        agent = Mechanize.new
-        agent.user_agent_alias = 'Windows IE 7'
-
-        if File.exists?('./cookie.yaml')
-          agent.cookie_jar.load('./cookie.yaml')
-          return agent
-        end
-
-        agent.get('https://www.hatena.ne.jp/login') do |page|
-          response = page.form_with(action: '/login') do |form|
-            form.field_with(name: 'name').value = @real
-            form.field_with(name: 'password').value = @pass
-          end.click_button
-
-          if response.body.include?('The Hatena ID or password you entered does not match our records.')
-            @log.error('Error: failed to loign.')
-          end
-        end
-
-        agent.cookie_jar.save_as('./cookie.yaml')
-        agent
-      rescue => e
-        @log.error(e)
-        @log.info('Retry after 30 seconds...')
-        sleep 30
-        retry
-      end
-
-      def extract_bookmarks(uri, &block)
-        @agent.get(uri) do |page|
-          page.search('div.interest-sub-unit').each do |interest|
-            nick = interest.at('h2/a').text
-            interest.search('ul.sub-entry-list/li').each do |entry|
-              link  = entry.at('h3/a')
-              users = entry.at('span.users').text
-              yield nick, link.attributes['title'].text, link.attributes['href'].text, users
-            end
-          end
-        end
+      rescue Exception => e
+        @log.error(e.inspect)
+        e.backtrace.each { |l| @log.error "\t#{l}" }
+        sleep 300
       end
 
       def privmsg(nick, channel, message)
