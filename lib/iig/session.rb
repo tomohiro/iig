@@ -30,7 +30,7 @@ module InterestIrcGateway
 
       post(@nick, JOIN, main_channel)
 
-      Thread.start do
+      @monitoring_thread = Thread.start do
         loop do
           @log.info('monitoring bookmarks...')
           monitoring(main_channel)
@@ -43,9 +43,7 @@ module InterestIrcGateway
     end
 
     def on_disconnected
-      Thread.list.each do |thread|
-        thread.kill
-      end
+      @monitoring_thread.kill rescue nil
     end
 
     private
