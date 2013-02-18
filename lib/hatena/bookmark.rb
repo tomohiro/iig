@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'time'
 require 'open-uri'
 require 'mechanize'
 
@@ -35,10 +34,10 @@ module Hatena
       interests = {}
       @agent.get("http://b.hatena.ne.jp/#{username}/interest") do |page|
         page.search('div.interest-sub-unit').each do |interest|
-          nick = interest.at('h2/a').text
-          interests[nick] = []
+          keyword = interest.at('h2/a').text
+          interests[keyword] = []
           interest.search('ul.sub-entry-list/li').each do |entry_dom|
-            interests[nick] << extract_entry_information(entry_dom)
+            interests[keyword] << extract_entry_information(entry_dom)
           end
         end
       end
