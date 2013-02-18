@@ -28,7 +28,7 @@ $ bundle install --path vendor/bundle
 Usage
 --------------------------------------------------------------------------------
 
-### Start service
+### Start the IIG server
 
 ```sh
 $ bundle exec iig
@@ -44,14 +44,30 @@ $ bundle exec iig --server 192.168.10.1 --port 16667
 ### Connect the IIG
 
 1. Launch a IRC client.(Limechat, irssi, weechat...)
-2. Connect the server(option is below)
+2. Connect the server
 
 
-#### Options
+#### Server options
+
+If you want check the command-line options, following type command. 
+
+```sh
+$ bundle exec iig --help
+```
+
+Option       | Value                              | Default
+-----------  | ---------------------------------- | ----------
+-p, --port   | Port number to listen              | 16704
+-s, --server | Host name or IP address to listen  | localhost
+-w, --wait   | Wait SECONDS between retrievals    | 3600(sec)
+-l, --log    | Log file                           | STDOUT
+
+
+#### IRC Client options
 
 Setting server properties.
 
-option    | value
+Option    | Value
 --------- | ------------------
 Real name | Hatena username
 Password  | Hatena password
