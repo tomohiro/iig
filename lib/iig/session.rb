@@ -15,9 +15,9 @@ module InterestIrcGateway
 
     def initialize(*args)
       super
-      @hatebu = Hatena::Bookmark.new
       @bookmarks = []
-      @users = []
+      @users     = []
+      @hatebu    = Hatena::Bookmark.new
     end
 
     def main_channel
@@ -34,8 +34,8 @@ module InterestIrcGateway
         loop do
           @log.info('monitoring bookmarks...')
           monitoring(main_channel)
-          @log.info('sleep 300 seconds')
-          sleep 300
+          @log.info("sleep #{@opts.wait} seconds")
+          sleep @opts.wait
         end
       end
     rescue => e
@@ -65,7 +65,7 @@ module InterestIrcGateway
       rescue Exception => e
         @log.error(e.inspect)
         e.backtrace.each { |l| @log.error "\t#{l}" }
-        sleep 300
+        sleep 300 # Retry after 300 seconds.
       end
 
       def privmsg(nick, channel, message)
