@@ -17,8 +17,6 @@ http_interactions:
       - ISO-8859-1,utf-8;q=0.7,*;q=0.7
       Accept-Language:
       - en-us,en;q=0.5
-      Cookie:
-      - b=$1$lwmyVPqV$bnfIX.0dnsvRe1TAEAXpM1; rk=0c3f2974434184a81d38558e7899375cefc4fabb
       Host:
       - b.hatena.ne.jp
       Connection:
