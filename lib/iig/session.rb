@@ -15,9 +15,10 @@ module InterestIrcGateway
 
     def initialize(*args)
       super
-      @bookmarks = []
-      @users     = []
-      @hatebu    = Hatena::Bookmark.new
+      @hatebu = Hatena::Bookmark.new
+
+      @notified_entries = []
+      @channel_members  = []
     end
 
     def main_channel
@@ -48,19 +49,20 @@ module InterestIrcGateway
 
     private
       def monitoring(channel)
-        @hatebu.interests(@real).each do |interest, entries|
-          unless @users.include?(interest)
-            post(interest, JOIN, channel)
-            @users << interest
-          end
+        entries = @hatebu.send(channel.gsub('#', ''), @real)
 
-          entries.each do |entry|
-            url = entry[:url]
-            next if @bookmarks.include?(url)
+        (entries.map(&:first).uniq - @channel_members).each do |nick|
+          post(nick, JOIN, channel)
+          @channel_members << nick
+        end
 
-            privmsg(interest, channel, "#{entry[:title]} #{url} (#{entry[:users]})")
-            @bookmarks << url
-          end
+        entries.each do |entry_info|
+          nick, entry = entry_info[0], entry_info[1]
+          url = entry.url
+          next if @notified_entries.include?(url)
+
+          privmsg(nick, channel, "#{entry.title} #{url} (#{entry.users})")
+          @notified_entries << url
         end
       rescue Exception => e
         @log.error(e.inspect)
