@@ -21,4 +21,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'net-irc'
   gem.add_runtime_dependency 'mechanize'
   gem.add_runtime_dependency 'slop'
+
+  gem.add_development_dependency 'guard-minitest'
+  gem.add_development_dependency 'webmock'
+  gem.add_development_dependency 'vcr'
 end

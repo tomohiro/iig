@@ -9,8 +9,21 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.2)
+    coderay (1.0.8)
+    crack (0.3.2)
     domain_name (0.5.7)
       unf (~> 0.0.3)
+    guard (1.6.2)
+      listen (>= 0.6.0)
+      lumberjack (>= 1.0.2)
+      pry (>= 0.9.10)
+      terminal-table (>= 1.4.3)
+      thor (>= 0.14.6)
+    guard-minitest (0.5.0)
+      guard (>= 0.4)
+    listen (0.7.2)
+    lumberjack (1.0.2)
     mechanize (2.5.1)
       domain_name (~> 0.5, >= 0.5.1)
       mime-types (~> 1.17, >= 1.17.2)
@@ -19,20 +32,34 @@ GEM
       nokogiri (~> 1.4)
       ntlm-http (~> 0.1, >= 0.1.1)
       webrobots (~> 0.0, >= 0.0.9)
+    method_source (0.8.1)
     mime-types (1.21)
     net-http-digest_auth (1.2.1)
     net-http-persistent (2.8)
     net-irc (0.0.9)
     nokogiri (1.5.6)
     ntlm-http (0.1.1)
+    pry (0.9.12)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
     slop (3.4.3)
+    terminal-table (1.4.5)
+    thor (0.17.0)
     unf (0.0.5)
       unf_ext
     unf_ext (0.0.5)
+    vcr (2.4.0)
+    webmock (1.9.2)
+      addressable (>= 2.2.7)
+      crack (>= 0.3.2)
     webrobots (0.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  guard-minitest
   iig!
+  vcr
+  webmock
