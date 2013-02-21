@@ -49,20 +49,17 @@ module InterestIrcGateway
 
     private
       def monitoring(channel)
-        entries = @hatebu.send(channel.gsub('#', ''), @real)
+        interests = @hatebu.interests(@real)
 
-        (entries.map(&:first).uniq - @channel_members).each do |nick|
-          post(nick, JOIN, channel)
-          @channel_members << nick
-        end
+        members = interests.keys
+        join_to_channel(members, channel)
 
-        entries.each do |entry_info|
-          nick, entry = entry_info[0], entry_info[1]
-          url = entry.url
-          next if @notified_entries.include?(url)
-
-          privmsg(nick, channel, "#{entry.title} #{url} (#{entry.users})")
-          @notified_entries << url
+        interests.each do |nick, entries|
+          entries.each do |entry|
+            next if @notified_entries.include?(entry.url)
+            @notified_entries << entry.url
+            privmsg(nick, channel, "#{entry.title} #{entry.url} (#{entry.users})")
+          end
         end
       rescue Exception => e
         @log.error(e.inspect)
@@ -72,6 +69,13 @@ module InterestIrcGateway
 
       def privmsg(nick, channel, message)
         post(nick, PRIVMSG, channel, message)
+      end
+
+      def join_to_channel(members, channel)
+        (members - @channel_members).each do |nick|
+          post(nick, JOIN, channel)
+          @channel_members << nick
+        end
       end
   end
 end

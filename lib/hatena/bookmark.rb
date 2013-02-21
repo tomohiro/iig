@@ -31,38 +31,18 @@ module Hatena
       @agent
     end
 
-    def interest(username)
-      interests = []
+    def interests(username)
+      interests = {}
       @agent.get("http://b.hatena.ne.jp/#{username}/interest") do |page|
         page.search('div.interest-sub-unit').each do |interest|
           keyword = interest.at('h2/a').text
+          interests[keyword] = []
           interest.search('ul.sub-entry-list/li').each do |entry_dom|
-            interests << [keyword, OpenStruct.new(extract_interest_entry_information(entry_dom))]
+            interests[keyword] << OpenStruct.new(extract_entry_information(entry_dom))
           end
         end
       end
       interests
-    end
-
-    def following(username)
-      following = []
-      @agent.get("http://b.hatena.ne.jp/#{username}/follow") do |page|
-        following = page.search('a.username').map(&:text)
-      end
-      following
-    end
-
-    def favorite(username)
-      favorites = []
-      @agent.get("http://b.hatena.ne.jp/#{username}/favorite") do |page|
-        page.search('.entry-block').each do |entry_dom|
-          entry = OpenStruct.new(extract_favorite_entry_information(entry_dom))
-          entry_dom.search('.others').each do |comment_dom|
-            favorites << [comment_dom.attributes['data-user'].text, entry]
-          end
-        end
-      end
-      favorites
     end
 
     private
@@ -79,18 +59,10 @@ module Hatena
         agent.cookie_jar.save_as(cookie_file_path)
       end
 
-      def extract_interest_entry_information(entry_dom)
+      def extract_entry_information(entry_dom)
         {
           title: entry_dom.at('h3/a').attributes['title'].text,
           url:   entry_dom.at('h3/a').attributes['href'].text,
-          users: entry_dom.at('span.users').text
-        }
-      end
-
-      def extract_favorite_entry_information(entry_dom)
-        {
-          title: entry_dom.at('a.entry-link').text,
-          url:   entry_dom.at('a.entry-link').attributes['href'].text,
           users: entry_dom.at('span.users').text
         }
       end
