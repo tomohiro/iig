@@ -1,10 +1,12 @@
-IIG [![Stillmaintained](http://stillmaintained.com/Tomohiro/iig.png)](http://stillmaintained.com/Tomohiro/iig)
+IIG [![Build Status](https://travis-ci.org/Tomohiro/iig.png?branch=master)](https://travis-ci.org/Tomohiro/iig) [![Stillmaintained](http://stillmaintained.com/Tomohiro/iig.png)](http://stillmaintained.com/Tomohiro/iig)
 ================================================================================
 
 HatenaBookmark Interest IRC Gateway
 
 [![Dependency Status](https://gemnasium.com/Tomohiro/iig.png)](https://gemnasium.com/Tomohiro/iig)
 [![Code Climate](https://codeclimate.com/github/Tomohiro/iig.png)](https://codeclimate.com/github/Tomohiro/iig)
+
+![IIG screenshot](screenshot.png)
 
 
 Requirements
