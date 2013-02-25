@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require 'net/irc'
-require 'hatena/bookmark'
 
 module InterestIrcGateway
   class Session < Net::IRC::Server::Session
@@ -15,67 +14,38 @@ module InterestIrcGateway
 
     def initialize(*args)
       super
-      @hatebu = Hatena::Bookmark.new
-
-      @notified_entries = []
-      @channel_members  = []
-    end
-
-    def main_channel
-      '#interest'
+      @channels = []
     end
 
     def on_user(message)
       super
-      @hatebu.login(@real, @pass)
-
-      post(@nick, JOIN, main_channel)
-
-      @monitoring_thread = Thread.start do
-        loop do
-          @log.info('monitoring bookmarks...')
-          monitoring(main_channel)
-          @log.info("sleep #{@opts.wait} seconds")
-          sleep @opts.wait
-        end
-      end
-    rescue => e
-      @log.error(e.to_s)
+      channel_streaming('#interest')
     end
 
     def on_disconnected
-      @monitoring_thread.kill rescue nil
+      @channels.each(&:stop)
     end
 
     private
-      def monitoring(channel)
-        interests = @hatebu.interests(@real)
+      def channel_streaming(name)
+        klass   = Channel.get(name)
+        channel = klass.new(username: @real, password: @pass, wait: @opts.wait)
 
-        members = interests.keys
-        join_to_channel(members, channel)
-
-        interests.each do |nick, entries|
-          entries.each do |entry|
-            next if @notified_entries.include?(entry.url)
-            @notified_entries << entry.url
-            privmsg(nick, channel, "#{entry.title} #{entry.url} (#{entry.users})")
-          end
+        join(@nick, name)
+        channel.stream do |nick, activity|
+          privmsg(nick, name, activity)
         end
-      rescue Exception => e
-        @log.error(e.inspect)
-        e.backtrace.each { |l| @log.error "\t#{l}" }
-        sleep 300 # Retry after 300 seconds.
+        @channels << channel
+      rescue => e
+        @log.error(e.to_s)
       end
 
       def privmsg(nick, channel, message)
         post(nick, PRIVMSG, channel, message)
       end
 
-      def join_to_channel(members, channel)
-        (members - @channel_members).each do |nick|
-          post(nick, JOIN, channel)
-          @channel_members << nick
-        end
+      def join(nick, channel)
+        post(nick, JOIN, channel)
       end
   end
 end
