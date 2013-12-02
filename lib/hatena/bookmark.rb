@@ -10,7 +10,7 @@ module Hatena
 
     def initialize
       @agent = Mechanize.new
-      @cookie_file_path = File.expand_path('./tmp/cookie.yaml')
+      @cookie_file_path = File.expand_path('../../tmp/cookie.yaml', __dir__)
     end
 
     def login(username, password)
