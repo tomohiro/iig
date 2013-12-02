@@ -4,8 +4,8 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'vcr'
-require 'minitest/unit'
 require 'minitest/autorun'
+require 'minitest/unit'
 
 require 'iig'
 
