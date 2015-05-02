@@ -5,23 +5,24 @@ module InterestIrcGateway
   class Server < Net::IRC::Server
     def initialize(opts = nil)
       opts ||= parse_options
-      super(opts[:server], opts[:port], InterestIrcGateway::Session, opts)
+      super(opts[:host], opts[:port], InterestIrcGateway::Session, opts)
     end
 
     def parse_options
-      opts = Slop.parse(help: true) do
-        banner 'Usage: iig [options]'
-        on :p, :port,    'Port number to listen (default: 16704)',                 argument: :optional, as: :integer, default: 16704
-        on :s, :server,  'Host name or IP address to listen (default: localhost)', argument: :optional, as: :string,  default: :localhost
-        on :w, :wait,    'Wait SECONDS between retrievals (default: 3600)',        argument: :optional, as: :integer, default: 3600
-        on :l, :log,     'Log file (default: STDOUT)',                             argument: :optional, as: :string,  default: nil
-        on :v, :version, 'Print the version' do
+      opts = Slop.parse do |o|
+        o.integer '-p', '--port', 'Port number to listen (default: 16704)', default: 16704
+        o.string '-h', '--host',  'Host name or IP address to listen (default: localhost)', default: '0.0.0.0'
+        o.integer '-w', '--wait', 'Wait SECONDS between retrievals (default: 3600)', default: 3600
+        o.string '-l', '--log',   'Log file (default: STDOUT)', default: nil
+        o.on '-v', '--version', 'Print the version' do
           puts InterestIrcGateway::VERSION
           exit
         end
+        o.on '--help' do
+          puts o
+          exit
+        end
       end
-
-      exit if opts.present?(:help)
 
       logger = Logger.new(opts[:log] || STDOUT, 'daily')
       logger.level = Logger::DEBUG
