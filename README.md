@@ -1,11 +1,12 @@
-IIG [![Stillmaintained](http://stillmaintained.com/Tomohiro/iig.png)](http://stillmaintained.com/Tomohiro/iig)
+IIG
 ================================================================================
 
 HatenaBookmark Interest IRC Gateway
 
-[![Build Status](https://travis-ci.org/Tomohiro/iig.png?branch=master)](https://travis-ci.org/Tomohiro/iig) 
-[![Dependency Status](https://gemnasium.com/Tomohiro/iig.png)](https://gemnasium.com/Tomohiro/iig)
-[![Code Climate](https://codeclimate.com/github/Tomohiro/iig.png)](https://codeclimate.com/github/Tomohiro/iig)
+[![Stillmaintained](http://stillmaintained.com/Tomohiro/iig.png)](http://stillmaintained.com/Tomohiro/iig)
+[![Build Status](https://img.shields.io/travis/Tomohiro/iig.svg?style=flat-square)](https://travis-ci.org/Tomohiro/iig)
+[![Dependency Status](https://img.shields.io/gemnasium/Tomohiro/iig.svg?style=flat-square)](https://gemnasium.com/Tomohiro/iig)
+[![Code Climate](https://img.shields.io/codeclimate/github/Tomohiro/iig.svg?style=flat-square)](https://codeclimate.com/github/Tomohiro/iig)
 
 ![IIG screenshot](screenshot.png)
 
@@ -13,7 +14,7 @@ HatenaBookmark Interest IRC Gateway
 Requirements
 -------------------------------------------------------------------------------
 
-- Ruby 1.9.3 or later
+- Ruby 2.2.2
 
 
 Installation
@@ -40,7 +41,7 @@ $ bundle exec iig
 Example: Change listen IP address, port.
 
 ```sh
-$ bundle exec iig --server 192.168.10.1 --port 16667
+$ bundle exec iig --host 192.168.10.1 --port 16667
 ```
 
 
@@ -52,7 +53,7 @@ $ bundle exec iig --server 192.168.10.1 --port 16667
 
 #### Server options
 
-If you want check the command-line options, following type command. 
+If you want check the command-line options, following type command.
 
 ```sh
 $ bundle exec iig --help
@@ -61,7 +62,7 @@ $ bundle exec iig --help
 Option       | Value                              | Default
 -----------  | ---------------------------------- | ----------
 -p, --port   | Port number to listen              | 16704
--s, --server | Host name or IP address to listen  | localhost
+-h, --host   | Host name or IP address to listen  | 0.0.0.0
 -w, --wait   | Wait SECONDS between retrievals    | 3600(sec)
 -l, --log    | Log file                           | STDOUT
 
@@ -86,6 +87,6 @@ Channel     | Description                     | Auto join
 LICENSE
 --------------------------------------------------------------------------------
 
-&copy; 2013 Tomohiro TAIRA.
+&copy; 2013 - 2015 Tomohiro TAIRA.
 This project is licensed under the MIT license.
 See LICENSE for details.

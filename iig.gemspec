@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'mechanize'
   spec.add_runtime_dependency 'slop'
 
+  spec.add_development_dependency 'guard'
   spec.add_development_dependency 'guard-minitest'
   spec.add_development_dependency 'webmock'
   spec.add_development_dependency 'vcr'
