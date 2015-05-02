@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    iig (0.0.1)
+    iig (0.1.0)
       mechanize
       net-irc
       slop
